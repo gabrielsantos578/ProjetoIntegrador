@@ -3,11 +3,9 @@
 >Neste repositório, será armazenado o projeto elaborado para a Prefeitura de Jales, com o propósito de aprimorar a eficiência no processo de obtenção de dados de projetos de construção.
 <br />
 
-## 🛠️ Status do Projeto
+## 🛠️ Ajustes e melhorias
 
-✔️ Sprint 1 - Completa.
-<br />
-🚧 Sprint 2 - Em desenvolvimento.
+🚧 O projeto ainda está em desenvolvimento...
 
 <br />
 

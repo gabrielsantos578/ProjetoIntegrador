@@ -4,9 +4,6 @@ using SGED.Services.Interfaces;
 
 namespace SGED.Controllers
 {
-
-    [Route("api/[controller]")]
-    [ApiController]
     public class PessoaController : Controller
     {
 
