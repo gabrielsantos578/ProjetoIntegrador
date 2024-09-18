@@ -1,30 +1,31 @@
 ﻿using SGED.Context;
-using SGED.Models.Entities;
-using SGED.DTO.Entities;
 using SGED.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Collections.Generic;
+using SGED.Objects.Utilities;
+using SGED.Objects.Models.Entities;
+using SGED.Objects.Utilities.StatusState;
 
 namespace SGED.Repositories.Entities;
 public class TipoDocumentoEtapaRepository : ITipoDocumentoEtapaRepository
 {
 
     private readonly AppDBContext _dbContext;
+    private readonly RemoveContext _remove;
 
     public TipoDocumentoEtapaRepository(AppDBContext dbContext)
     {
         _dbContext = dbContext;
+        _remove = new RemoveContext(dbContext);
     }
 
     public async Task<IEnumerable<TipoDocumentoEtapa>> GetAll()
     {
-        return await _dbContext.TipoDocumentoEtapa.Include(objeto => objeto.Etapa).Include(objeto => objeto.TipoDocumento).ToListAsync();
+        return await _dbContext.TipoDocumentoEtapa.AsNoTracking().ToListAsync();
     }
 
     public async Task<TipoDocumentoEtapa> GetById(int id)
     {
-        return await _dbContext.TipoDocumentoEtapa.Include(objeto => objeto.Etapa).Include(objeto => objeto.TipoDocumento).Where(b => b.Id == id).FirstOrDefaultAsync();
+        return await _dbContext.TipoDocumentoEtapa.AsNoTracking().FirstOrDefaultAsync(tde => tde.Id == id);
     }
 
 
@@ -50,28 +51,22 @@ public class TipoDocumentoEtapaRepository : ITipoDocumentoEtapaRepository
         return TipoDocumentoEtapa;
     }
 
+    public async Task<IEnumerable<TipoDocumentoEtapa>> GetTypeDocumentStagesRelatedToStage(int IdEtapa)
+    {
+        return await _dbContext.TipoDocumentoEtapa.Where(tde => tde.IdEtapa == IdEtapa).AsNoTracking().ToListAsync();
+    }
 
     public async Task<IEnumerable<TipoDocumento>> GetTypeDocumentsRelatedToStage(int IdEtapa)
     {
-        var tipoDocumentoIdsRelacionados = await _dbContext.TipoDocumentoEtapa
-                                                            .Where(td => td.IdEtapa == IdEtapa)
-                                                            .Select(td => td.IdTipoDocumento)
-                                                            .ToListAsync();
-
-        return await _dbContext.TipoDocumento.Where(td => tipoDocumentoIdsRelacionados.Contains(td.Id))
-                                              .ToListAsync();
+        var tipoDocumentoIdsRelacionados = await _dbContext.TipoDocumentoEtapa.Where(tde => tde.IdEtapa == IdEtapa).AsNoTracking().Select(tde => tde.IdTipoDocumento).ToListAsync();
+        return await _dbContext.TipoDocumento.Where(td => tipoDocumentoIdsRelacionados.Contains(td.Id)).AsNoTracking().ToListAsync();
     }
 
 
     public async Task<IEnumerable<TipoDocumento>> GetTypeDocumentsNoRelatedToStage(int IdEtapa)
     {
-        var tipoDocumentoIdsRelacionados = await _dbContext.TipoDocumentoEtapa
-                                                            .Where(td => td.IdEtapa == IdEtapa)
-                                                            .Select(td => td.IdTipoDocumento)
-                                                            .ToListAsync();
-
-        return await _dbContext.TipoDocumento.Where(td => !tipoDocumentoIdsRelacionados.Contains(td.Id))
-                                              .ToListAsync();
+        var tipoDocumentoIdsRelacionados = await _dbContext.TipoDocumentoEtapa.Where(tde => tde.IdEtapa == IdEtapa).AsNoTracking().Select(tde => tde.IdTipoDocumento).ToListAsync();
+        return await _dbContext.TipoDocumento.Where(td => !tipoDocumentoIdsRelacionados.Contains(td.Id)).AsNoTracking().ToListAsync();
     }
 
 

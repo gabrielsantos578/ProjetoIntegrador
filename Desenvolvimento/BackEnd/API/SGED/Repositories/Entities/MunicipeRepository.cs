@@ -1,7 +1,7 @@
 ﻿using SGED.Context;
-using SGED.Models.Entities;
 using SGED.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using SGED.Objects.Models.Entities;
 
 namespace SGED.Repositories.Entities;
 public class MunicipeRepository : IMunicipeRepository
@@ -16,12 +16,12 @@ public class MunicipeRepository : IMunicipeRepository
 
     public async Task<IEnumerable<Municipe>> GetAll()
     {
-        return await _dbContext.Municipe.ToListAsync();
+        return await _dbContext.Municipe.AsNoTracking().ToListAsync();
     }
 
     public async Task<Municipe> GetById(int id)
     {
-        return await _dbContext.Municipe.Where(objeto => objeto.Id == id).FirstOrDefaultAsync();
+        return await _dbContext.Municipe.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
     }
 
 

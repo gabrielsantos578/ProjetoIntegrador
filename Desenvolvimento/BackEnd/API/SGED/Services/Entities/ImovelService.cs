@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
-using SGED.DTO.Entities;
-using SGED.Models.Entities;
+using SGED.Objects.DTO.Entities;
+using SGED.Objects.Models.Entities;
 using SGED.Repositories.Entities;
 using SGED.Repositories.Interfaces;
 using SGED.Services.Interfaces;
 
 namespace SGED.Services.Entities
 {
-	public class ImovelService : IImovelService
+    public class ImovelService : IImovelService
 	{
 		private readonly IImovelRepository _imovelRepository;
 		private readonly IMapper _mapper;
@@ -30,7 +30,13 @@ namespace SGED.Services.Entities
 			return _mapper.Map<ImovelDTO>(imovel);
 		}
 
-		public async Task Create(ImovelDTO imovelDTO)
+        public async Task<ImovelDTO> GetByProperty(string propertyName, string data)
+        {
+            var imovel = await _imovelRepository.GetByProperty(propertyName, data);
+            return _mapper.Map<ImovelDTO>(imovel);
+        }
+
+        public async Task Create(ImovelDTO imovelDTO)
 		{
 			var imovel = _mapper.Map<Imovel>(imovelDTO);
 			await _imovelRepository.Create(imovel);

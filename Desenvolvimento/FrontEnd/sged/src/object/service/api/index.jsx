@@ -1,29 +1,22 @@
-import StorageModule from '../../modules/storage';
 import CookieModule from '../../modules/cookie';
 
 function ApiService() {
 
-  const storage = StorageModule();
   const cookie = CookieModule();
-  const baseURL = "https://localhost:7096/api/";
+  const baseURL = "https://192.168.0.106:7096/api/";
 
   const appendRoute = (route) => {
     return baseURL + route;
   };
 
-  const updateToken = (newToken) => {
-    //storage.setLocal('token', newToken? newToken.startsWith('Front ') ? newToken.replace('Front ', '') : newToken : null);
-    cookie.setCookie("token", newToken? newToken.startsWith('Front ') ? newToken.replace('Front ', '') : newToken : null);
-  };
-
   const headerConfig = () => {
-    const token = cookie.getCookie("token");
+    const auth = cookie.getCookie("token");
 
-    if (token) {
+    if (auth) {
       return {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Front ${token}`
+          Authorization: `Bearer ${auth}`
         }
       };
     } else {
@@ -36,8 +29,7 @@ function ApiService() {
   };
 
   return {
-    appendRoute, 
-    updateToken, 
+    appendRoute,
     headerConfig 
   };
 

@@ -1,11 +1,9 @@
-import TokenClass from '../../class/token';
 import ConnectionService from '../connection';
 import StorageModule from '../../modules/storage';
 import CookieModule from '../../modules/cookie';
 
 function SessionService() {
 
-    const tokenClass = TokenClass();
     const connection = new ConnectionService();
     const storage = StorageModule();
     const cookie = CookieModule();
@@ -25,7 +23,7 @@ function SessionService() {
 
         if (token) {
             try {
-                await connection.endpoint("Sessao").action("GetUser").get(token);
+                await connection.endpoint("Sessao").data(token).action("GetUser").get();
                 return connection.response.status? connection.response.data : null;
 
             } catch (error) {
@@ -50,12 +48,12 @@ function SessionService() {
 
     const defaultLogin = () => {
         //storage.setLocal('login', null);
-        cookie.deleteCookie("login");
+        cookie.setCookie("login", null);
     };
 
     const defaultToken = () => {
         //storage.setLocal('token', null);
-        cookie.deleteCookie("token");
+        cookie.setCookie("token", null);
     };
 
     const createSession = async (object) => {
@@ -63,10 +61,10 @@ function SessionService() {
         var autentication = false;
 
         try {
-            await connection.endpoint("Sessao").action("Autentication").post(object);
+            await connection.endpoint("Sessao").action("Autentication").post(object.getData());
 
             if (connection.response.status) {
-                setToken(connection.response.data.response);
+                setToken(connection.response.data);
 
                 if (object.persistLogin) {
                     setLogin(object);
@@ -84,7 +82,7 @@ function SessionService() {
 
             } else {
                 defaultToken();
-                return { validation: autentication, message: connection.response.data.response };
+                return { validation: autentication, message: connection.getObject()?.errorLogin };
             }
 
         } catch (error) {
@@ -95,11 +93,15 @@ function SessionService() {
     };
 
     const closeSession = async () => {
-        const token = getToken();
+        const tokenUser = getToken();
 
-        if (token) {
+        if (tokenUser) {
+            const data = {
+                token: tokenUser
+            };
+
             try {
-                await connection.endpoint("Sessao").action("Close").put(tokenClass);
+                await connection.endpoint("Sessao").action("Close").put(data);
                 defaultToken();
 
                 return connection.response.status;
@@ -113,18 +115,21 @@ function SessionService() {
     };
 
     const validateToken = async () => {
-        const token = getToken();
+        const tokenUser = getToken();
 
-        if (token) {
+        if (tokenUser) {
+            const data = {
+                token: tokenUser
+            };
+
             try {
-                await connection.endpoint("Sessao").action("Validation").put(tokenClass);
+                await connection.endpoint("Sessao").action("Validation").put(data);
+                if (!connection.response.status) { defaultToken(); return false; }
 
-                if (connection.response.status) setToken(connection.response.data.response);
-                else defaultToken();
-
-                return connection.response.status;
+                return true;
 
             } catch (error) {
+                defaultToken();
                 return false;
             }
         } else {
@@ -144,10 +149,12 @@ function SessionService() {
         getLogin,
         getToken,
         getUser,
+
         setLogin,
         setToken,
         defaultLogin,
         defaultToken,
+
         createSession,
         closeSession,
         validateToken,

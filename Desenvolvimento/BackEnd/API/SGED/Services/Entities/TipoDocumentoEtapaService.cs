@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using SGED.DTO.Entities;
-using SGED.Models.Entities;
+using SGED.Objects.DTO.Entities;
+using SGED.Objects.Models.Entities;
 using SGED.Repositories.Interfaces;
 using SGED.Services.Interfaces;
 
@@ -45,6 +45,12 @@ public class TipoDocumentoEtapaService : ITipoDocumentoEtapaService
     public async Task Remove(int id)
     {
         await _tipoDocumentoEtapaRepository.Delete(id);
+    }
+
+    public async Task<IEnumerable<TipoDocumentoEtapaDTO>> GetTypeDocumentStagesRelatedToStage(int IdEtapa)
+    {
+        var tipoDocumentoEtapas = await _tipoDocumentoEtapaRepository.GetTypeDocumentStagesRelatedToStage(IdEtapa);
+        return _mapper.Map<IEnumerable<TipoDocumentoEtapaDTO>>(tipoDocumentoEtapas);
     }
 
     public async Task<IEnumerable<TipoDocumentoDTO>> GetTypeDocumentsRelatedToStage(int IdEtapa)

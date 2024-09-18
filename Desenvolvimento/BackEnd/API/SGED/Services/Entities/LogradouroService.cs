@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
-using SGED.DTO.Entities;
-using SGED.Models.Entities;
+using SGED.Objects.DTO.Entities;
+using SGED.Objects.Models.Entities;
 using SGED.Repositories.Interfaces;
 using SGED.Services.Interfaces;
 
 namespace SGED.Services.Entities
 {
-	public class LogradouroService : ILogradouroService
+    public class LogradouroService : ILogradouroService
 	{
 		private readonly ILogradouroRepository _logradouroRepository;
 		private readonly IMapper _mapper;
@@ -23,7 +23,13 @@ namespace SGED.Services.Entities
 			return _mapper.Map<IEnumerable<LogradouroDTO>>(logradouro);
 		}
 
-		public async Task<LogradouroDTO> GetById(int id)
+        public async Task<IEnumerable<LogradouroDTO>> GetByNeighbourhood(int idBairro)
+        {
+            var logradouro = await _logradouroRepository.GetByNeighbourhood(idBairro);
+            return _mapper.Map<IEnumerable<LogradouroDTO>>(logradouro);
+        }
+
+        public async Task<LogradouroDTO> GetById(int id)
 		{
 			var logradouro = await _logradouroRepository.GetById(id);
 			return _mapper.Map<LogradouroDTO>(logradouro);

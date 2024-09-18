@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using SGED.DTO.Entities;
-using SGED.Models.Entities;
+using SGED.Objects.DTO.Entities;
+using SGED.Objects.Models.Entities;
 using SGED.Repositories.Interfaces;
 using SGED.Services.Interfaces;
 
@@ -20,6 +20,12 @@ public class BairroService : IBairroService
     public async Task<IEnumerable<BairroDTO>> GetAll()
     {
         var bairros = await _bairroRepository.GetAll();
+        return _mapper.Map<IEnumerable<BairroDTO>>(bairros);
+    }
+
+    public async Task<IEnumerable<BairroDTO>> GetByCity(int idCidade)
+    {
+        var bairros = await _bairroRepository.GetByCity(idCidade);
         return _mapper.Map<IEnumerable<BairroDTO>>(bairros);
     }
 

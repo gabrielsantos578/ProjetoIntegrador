@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SGED.Models.Entities;
+using SGED.Objects.Models.Entities;
 
 namespace SGED.Context.Builders
 {
@@ -8,9 +8,12 @@ namespace SGED.Context.Builders
         public static void Build(ModelBuilder modelBuilder)
         {
             // Builder
-            modelBuilder.Entity<TipoLogradouro>().HasKey(b => b.Id);
-            modelBuilder.Entity<TipoLogradouro>().Property(b => b.CodigoInformativo).HasMaxLength(3).IsRequired();
-            modelBuilder.Entity<TipoLogradouro>().Property(b => b.Descricao).HasMaxLength(35).IsRequired();
+            modelBuilder.Entity<TipoLogradouro>().Property(tl => tl.Id);
+            modelBuilder.Entity<TipoLogradouro>().Property(tl => tl.CodigoInformativo).HasMaxLength(3).IsRequired();
+            modelBuilder.Entity<TipoLogradouro>().Property(tl => tl.Descricao).HasMaxLength(35).IsRequired();
+
+            // Declaração: Defini o ID como Chave Primária
+            modelBuilder.Entity<TipoLogradouro>().HasKey(tl => tl.Id);
 
 
             // Inserções

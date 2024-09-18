@@ -4,13 +4,15 @@ import ControlModule from '../../../object/modules/control';
 function PublicPlaceClass() {
     const control = ControlModule();
 
-    const [publicPlaceId, setPublicPlaceId] = useState("");
+    const [publicPlaceId, setPublicPlaceId] = useState(0);
     const [publicPlaceCep, setPublicPlaceCep] = useState("");
     const [publicPlaceInitialNumber, setPublicPlaceInitialNumber] = useState("");
     const [publicPlaceFinalNumber, setPublicPlaceFinalNumber] = useState("");
-    const [idNeighborhood, setIdNeighborhood] = useState("");
-    const [idTypePublicPlace, setIdTypePublicPlace] = useState("");
+    const [publicPlaceStreet, setPublicPlaceStreet] = useState("")
+    const [idNeighborhood, setIdNeighborhood] = useState(0);
+    const [idTypePublicPlace, setIdTypePublicPlace] = useState(0);
 
+    const [errorPublicPlaceStreet, setErrorPublicPlaceStreet] = useState("");
     const [errorPublicPlaceCep, setErrorPublicPlaceCep] = useState("");
     const [errorPublicPlaceInitialNumber, setErrorPublicPlaceInitialNumber] = useState("");
     const [errorPublicPlaceFinalNumber, setErrorPublicPlaceFinalNumber] = useState("");
@@ -25,19 +27,11 @@ function PublicPlaceClass() {
         return "o";
     }
 
-    function getData(object) {
-        setPublicPlaceId(object.id);
-        setPublicPlaceCep(object.cep);
-        setPublicPlaceInitialNumber(object.numeroInicial);
-        setPublicPlaceFinalNumber(object.numeroFinal);
-        setIdNeighborhood(object.idBairro);
-        setIdTypePublicPlace(object.idTipoLogradouro);
-    }
-
-    function setData() {
+    function getData() {
         return {
             id: publicPlaceId,
             cep: publicPlaceCep,
+            ruaLogradouro: publicPlaceStreet,
             numeroInicial: publicPlaceInitialNumber,
             numeroFinal: publicPlaceFinalNumber,
             idBairro: idNeighborhood,
@@ -45,17 +39,29 @@ function PublicPlaceClass() {
         };
     }
 
+    function setData(object) {
+        setPublicPlaceId(object.id);
+        setPublicPlaceCep(object.cep);
+        setPublicPlaceStreet(object.ruaLogradouro);
+        setPublicPlaceInitialNumber(object.numeroInicial);
+        setPublicPlaceFinalNumber(object.numeroFinal);
+        setIdNeighborhood(object.idBairro);
+        setIdTypePublicPlace(object.idTipoLogradouro);
+    }
+
     function clearData() {
-        setPublicPlaceId('');
+        setPublicPlaceId(0);
         setPublicPlaceCep('');
+        setPublicPlaceStreet('');
         setPublicPlaceInitialNumber('');
         setPublicPlaceFinalNumber('');
-        setIdNeighborhood('');
-        setIdTypePublicPlace('');
+        setIdNeighborhood(0);
+        setIdTypePublicPlace(0);
     }
 
     function clearError() {
         setErrorPublicPlaceCep('');
+        setErrorPublicPlaceStreet('');
         setErrorPublicPlaceInitialNumber('');
         setErrorPublicPlaceFinalNumber('');
         setErrorIdNeighborhood('');
@@ -74,7 +80,13 @@ function PublicPlaceClass() {
         const status = cepExists ? false : true;
 
         return { status, cepExists };
-    };
+    }
+
+    function checkNumberBetweenInterval(number) {
+        return (publicPlaceInitialNumber && publicPlaceFinalNumber)? 
+            ((parseInt(publicPlaceInitialNumber) <= number) && (number <= parseInt(publicPlaceFinalNumber))) : 
+            true;
+    }
 
     function verifyData(list) {
         clearError();
@@ -100,6 +112,9 @@ function PublicPlaceClass() {
             if (publicPlaceInitialNumber === publicPlaceFinalNumber) {
                 initial = 'O número inicial não pode ser igual ao número final!';
                 status = false;
+            } else if (publicPlaceInitialNumber >= publicPlaceFinalNumber) {
+                initial = 'O número inicial não pode ser maior que o número final!';
+                status = false;
             }
         } else {
             initial = 'O número inicial é requerido!';
@@ -109,6 +124,9 @@ function PublicPlaceClass() {
         if (publicPlaceFinalNumber) {
             if (publicPlaceFinalNumber === publicPlaceInitialNumber) {
                 final = 'O número final não pode ser igual ao número inicial!';
+                status = false;
+            } else if (publicPlaceFinalNumber <= publicPlaceInitialNumber) {
+                final = 'O número final não pode ser menor que número inicial!';
                 status = false;
             }
         } else {
@@ -126,7 +144,7 @@ function PublicPlaceClass() {
             status = false;
         }
 
-        if (list.some(object => true) && (!postalcode)) {
+        /*if (list.any() && (!postalcode)) {
             const publicplaces = list.map(object => ({
                 id: object.id,
                 cep: object.cep
@@ -138,7 +156,7 @@ function PublicPlaceClass() {
             if (response.cepExists) {
                 postalcode = 'O CEP informado já existe!';
             }
-        }
+        }*/
 
         setErrorPublicPlaceCep(postalcode);
         setErrorPublicPlaceInitialNumber(initial);
@@ -174,7 +192,8 @@ function PublicPlaceClass() {
     return {
         // Atributos
         publicPlaceId,
-        setPublicPlaceId,
+        publicPlaceStreet,
+        setPublicPlaceStreet,
         publicPlaceCep,
         setPublicPlaceCep,
         publicPlaceInitialNumber,
@@ -203,6 +222,7 @@ function PublicPlaceClass() {
         verifyData,
 
         // Função de Controle
+        checkNumberBetweenInterval,
         handleCEP
     };
 }

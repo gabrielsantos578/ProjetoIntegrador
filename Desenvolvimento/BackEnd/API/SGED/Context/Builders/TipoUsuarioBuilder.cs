@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SGED.Models.Entities;
+using SGED.Objects.Models.Entities;
 
 namespace SGED.Context.Builders
 {
@@ -8,10 +8,13 @@ namespace SGED.Context.Builders
         public static void Build(ModelBuilder modelBuilder)
         {
             // Builder
-            modelBuilder.Entity<TipoUsuario>().HasKey(b => b.Id);
-            modelBuilder.Entity<TipoUsuario>().Property(b => b.NivelAcesso).HasMaxLength(1).IsRequired();
-            modelBuilder.Entity<TipoUsuario>().Property(b => b.NomeTipoUsuario).HasMaxLength(20).IsRequired();
-            modelBuilder.Entity<TipoUsuario>().Property(b => b.DescricaoTipoUsuario).HasMaxLength(300).IsRequired();
+            modelBuilder.Entity<TipoUsuario>().Property(tu => tu.Id);
+            modelBuilder.Entity<TipoUsuario>().Property(tu => tu.NivelAcesso).HasMaxLength(1).IsRequired();
+            modelBuilder.Entity<TipoUsuario>().Property(tu => tu.NomeTipoUsuario).HasMaxLength(20).IsRequired();
+            modelBuilder.Entity<TipoUsuario>().Property(tu => tu.DescricaoTipoUsuario).HasMaxLength(300).IsRequired();
+
+            // Declaração: Defini o ID como Chave Primária
+            modelBuilder.Entity<TipoUsuario>().HasKey(tu => tu.Id);
 
 
             // Inserções

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SGED.Models.Entities;
+using SGED.Objects.Models.Entities;
 
 namespace SGED.Context.Builders
 {
@@ -8,12 +8,19 @@ namespace SGED.Context.Builders
         public static void Build(ModelBuilder modelBuilder)
         {
             // Builder
-            modelBuilder.Entity<Cidade>().HasKey(b => b.Id);
-            modelBuilder.Entity<Cidade>().Property(b => b.NomeCidade).HasMaxLength(100).IsRequired();
-            modelBuilder.Entity<Cidade>().HasOne(b => b.Estado).WithMany().HasForeignKey(b => b.IdEstado);
+            modelBuilder.Entity<Cidade>().Property(c => c.Id);
+            modelBuilder.Entity<Cidade>().Property(c => c.NomeCidade).HasMaxLength(100).IsRequired();
+            modelBuilder.Entity<Cidade>().Property(c => c.IdEstado).IsRequired();
+
+            // Declaração: Defini o ID como Chave Primária
+            modelBuilder.Entity<Cidade>().HasKey(c => c.Id);
 
             // Relacionamento: Estado -> Cidade
-            modelBuilder.Entity<Estado>().HasMany(p => p.Cidades).WithOne(b => b.Estado).IsRequired().OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Cidade>()
+                .HasOne(c => c.Estado)
+                .WithMany(e => e.Cidades)
+                .HasForeignKey(c => c.IdEstado)
+                .OnDelete(DeleteBehavior.Cascade);
 
 
             // Inserções

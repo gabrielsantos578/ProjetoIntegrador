@@ -1,7 +1,7 @@
 ﻿using SGED.Context;
-using SGED.Models.Entities;
 using SGED.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using SGED.Objects.Models.Entities;
 
 namespace SGED.Repositories.Entities;
 public class SessaoRepository : ISessaoRepository
@@ -16,46 +16,42 @@ public class SessaoRepository : ISessaoRepository
 
     public async Task<IEnumerable<Sessao>> GetAll()
     {
-        return await _dbContext.Sessao.ToListAsync();
+        return await _dbContext.Sessao.AsNoTracking().ToListAsync();
     }
 
     public async Task<IEnumerable<IEnumerable<Sessao>>> GetAllSessionsGroupedByUser()
     {
-        return await _dbContext.Sessao.GroupBy(sessao => sessao.IdUsuario).Select(group => group.OrderBy(sessao => sessao.Id)).ToListAsync();
+        return await _dbContext.Sessao.GroupBy(s => s.IdUsuario).Select(group => group.OrderBy(s => s.Id)).AsNoTracking().ToListAsync();
     }
 
     public async Task<IEnumerable<Sessao>> GetOpenSessions()
     {
-        return await _dbContext.Sessao.Where(sessao => sessao.StatusSessao).ToListAsync();
+        return await _dbContext.Sessao.Where(s => s.StatusSessao).AsNoTracking().ToListAsync();
     }
 
     public async Task<IEnumerable<Sessao>> GetCloseSessions()
     {
-        return await _dbContext.Sessao.Where(sessao => !sessao.StatusSessao).ToListAsync();
+        return await _dbContext.Sessao.Where(s => !s.StatusSessao).AsNoTracking().ToListAsync();
     }
 
     public async Task<Sessao> GetLastSession(int id)
     {
-        return await _dbContext.Sessao.Where(sessao => sessao.IdUsuario == id).OrderByDescending(sessao => sessao.Id).FirstOrDefaultAsync();
+        return await _dbContext.Sessao.Where(s => s.IdUsuario == id).OrderByDescending(s => s.Id).AsNoTracking().FirstOrDefaultAsync();
     }
 
-    public async Task<Sessao> GetById(int id)
+    public async Task<Sessao> GetById(Guid id)
     {
-        // return await _dbContext.Sessao.Where(sessao => sessao.Id == id).Include(sessao => sessao.Usuario).ThenInclude(usuario => usuario.TipoUsuario).FirstOrDefaultAsync();
-        return await _dbContext.Sessao.Where(sessao => sessao.Id == id).FirstOrDefaultAsync();
+        return await _dbContext.Sessao.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
     }
 
     public async Task<Sessao> GetByToken(string token)
     {
-        return await _dbContext.Sessao.Where(sessao => sessao.TokenSessao == token).FirstOrDefaultAsync();
+        return await _dbContext.Sessao.AsNoTracking().FirstOrDefaultAsync(s => s.TokenSessao == token);
     }
 
     public async Task<Usuario> GetUser(string token)
     {
-        var sessao = await _dbContext.Sessao
-            .Include(s => s.Usuario)
-                .ThenInclude(u => u.TipoUsuario)
-            .FirstOrDefaultAsync(s => s.TokenSessao == token);
+        var sessao = await _dbContext.Sessao.Where(s => s.TokenSessao == token).Include(s => s.Usuario).ThenInclude(u => u.TipoUsuario).AsNoTracking().FirstOrDefaultAsync();
 
         return sessao?.Usuario;
     }
@@ -75,7 +71,7 @@ public class SessaoRepository : ISessaoRepository
         return sessao;
     }
 
-    public async Task<Sessao> Delete(int id)
+    public async Task<Sessao> Delete(Guid id)
     {
         var sessao = await GetById(id);
         _dbContext.Sessao.Remove(sessao);
@@ -87,25 +83,25 @@ public class SessaoRepository : ISessaoRepository
     {
         return await _dbContext.Usuario.GroupJoin(
             _dbContext.Sessao,
-            usuario => usuario.Id,
-            sessao => sessao.IdUsuario,
-            (usuario, sessoes) => new { Usuario = usuario, UltimaSessao = sessoes.OrderByDescending(s => s.Id).FirstOrDefault() }
-        ).Where(sessao => sessao.Usuario.Id != 1 && (sessao.UltimaSessao != null && sessao.UltimaSessao.StatusSessao)).Select(sessao => sessao.Usuario).ToListAsync();
+            u => u.Id,
+            s => s.IdUsuario,
+            (u, sessoes) => new { Usuario = u, UltimaSessao = sessoes.OrderByDescending(s => s.Id).FirstOrDefault() }
+        ).Where(s => /*s.Usuario.Id != 1 &&*/ (s.UltimaSessao != null && s.UltimaSessao.StatusSessao)).AsNoTracking().Select(s => s.Usuario).ToListAsync();
     }
 
     public async Task<IEnumerable<Usuario>> GetOfflineUsers()
     {
         return await _dbContext.Usuario.GroupJoin(
             _dbContext.Sessao,
-            usuario => usuario.Id,
-            sessao => sessao.IdUsuario,
-            (usuario, sessoes) => new { Usuario = usuario, UltimaSessao = sessoes.OrderByDescending(s => s.Id).FirstOrDefault() }
-        ).Where(sessao => sessao.Usuario.Id != 1 && (sessao.UltimaSessao == null || !sessao.UltimaSessao.StatusSessao)).Select(sessao => sessao.Usuario).ToListAsync();
+            u => u.Id,
+            s => s.IdUsuario,
+            (u, sessoes) => new { Usuario = u, UltimaSessao = sessoes.OrderByDescending(s => s.Id).FirstOrDefault() }
+        ).Where(s => /*s.Usuario.Id != 1 &&*/ (s.UltimaSessao == null || !s.UltimaSessao.StatusSessao)).AsNoTracking().Select(s => s.Usuario).ToListAsync();
     }
 
     public async Task<IEnumerable<Sessao>> GetOpenSessionByUser(int id)
     {
-        return await _dbContext.Sessao.Where(sessao => sessao.StatusSessao && sessao.IdUsuario == id).ToListAsync();
+        return await _dbContext.Sessao.Where(s => s.StatusSessao && s.IdUsuario == id).AsNoTracking().ToListAsync();
     }
 
 }

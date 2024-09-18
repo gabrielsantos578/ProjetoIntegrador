@@ -1,4 +1,4 @@
-﻿using SGED.DTO.Entities;
+﻿using SGED.Objects.DTO.Entities;
 
 namespace SGED.Services.Interfaces
 {
@@ -10,6 +10,7 @@ namespace SGED.Services.Interfaces
         Task Update(TipoDocumentoEtapaDTO TipoDocumentoEtapaDTO);
         Task Remove(int id);
 
+        Task<IEnumerable<TipoDocumentoEtapaDTO>> GetTypeDocumentStagesRelatedToStage(int IdEtapa);
         Task<IEnumerable<TipoDocumentoDTO>> GetTypeDocumentsRelatedToStage(int IdEtapa);
         Task<IEnumerable<TipoDocumentoDTO>> GetTypeDocumentsNoRelatedToStage(int IdEtapa);
     }

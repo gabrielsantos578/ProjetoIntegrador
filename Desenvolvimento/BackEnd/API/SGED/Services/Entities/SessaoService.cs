@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using SGED.DTO.Entities;
-using SGED.Models.Entities;
+using SGED.Objects.DTO.Entities;
+using SGED.Objects.Models.Entities;
 using SGED.Repositories.Interfaces;
 using SGED.Services.Interfaces;
 
@@ -41,7 +41,7 @@ public class SessaoService : ISessaoService
         return _mapper.Map<SessaoDTO>(sessao);
     }
 
-    public async Task<SessaoDTO> GetById(int id)
+    public async Task<SessaoDTO> GetById(Guid id)
     {
         /*var sessao = await _sessaoRepository.GetById(id);
         var sessaoDTO = _mapper.Map<SessaoDTO>(sessao);
@@ -79,7 +79,7 @@ public class SessaoService : ISessaoService
         await _sessaoRepository.Update(sessao);
     }
 
-    public async Task Remove(int id)
+    public async Task Remove(Guid id)
     {
         await _sessaoRepository.Delete(id);
     }

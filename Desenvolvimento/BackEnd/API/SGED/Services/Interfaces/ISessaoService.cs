@@ -1,5 +1,4 @@
-﻿using SGED.DTO.Entities;
-using SGED.Models.Entities;
+﻿using SGED.Objects.DTO.Entities;
 
 namespace SGED.Services.Interfaces
 {
@@ -9,12 +8,12 @@ namespace SGED.Services.Interfaces
         Task<IEnumerable<SessaoDTO>> GetOpenSessions();
         Task<IEnumerable<SessaoDTO>> GetCloseSessions();
         Task<SessaoDTO> GetLastSession(int id);
-        Task<SessaoDTO> GetById(int id);
+        Task<SessaoDTO> GetById(Guid id);
         Task<SessaoDTO> GetByToken(string token);
         Task<UsuarioDTO> GetUser(string token);
         Task Create(SessaoDTO sessaoDTO);
         Task Update(SessaoDTO sessaoDTO);
-        Task Remove(int id);
+        Task Remove(Guid id);
 
         Task<IEnumerable<UsuarioDTO>> GetOnlineUsers();
         Task<IEnumerable<UsuarioDTO>> GetOfflineUsers();

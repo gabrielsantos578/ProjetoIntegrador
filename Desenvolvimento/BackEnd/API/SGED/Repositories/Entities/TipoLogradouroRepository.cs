@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SGED.Context;
-using SGED.Models.Entities;
+using SGED.Objects.Models.Entities;
 using SGED.Repositories.Interfaces;
 
 namespace SGED.Repositories.Entities
 {
-	public class TipoLogradouroRepository : ITipoLogradouroRepository
+    public class TipoLogradouroRepository : ITipoLogradouroRepository
 	{
 		private readonly AppDBContext _dbContext;
 
@@ -16,11 +16,11 @@ namespace SGED.Repositories.Entities
 
 		public async Task<IEnumerable<TipoLogradouro>> GetAll()
 		{
-			return await _dbContext.TipoLogradouro.ToListAsync();
+			return await _dbContext.TipoLogradouro.AsNoTracking().ToListAsync();
 		}
 		public async Task<TipoLogradouro> GetById(int id)
 		{
-			return await _dbContext.TipoLogradouro.Where(objeto => objeto.Id == id).FirstOrDefaultAsync();
+			return await _dbContext.TipoLogradouro.AsNoTracking().FirstOrDefaultAsync(tl => tl.Id == id);
 		}
 
 		public async Task<TipoLogradouro> Create(TipoLogradouro tipoLogradouro)
