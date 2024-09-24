@@ -93,7 +93,7 @@ namespace SGED
                 builder.SetIsOriginAllowed(origin =>
                 {
                     var uri = new Uri(origin);
-                    return uri.Host.StartsWith("192.168.0.") && (uri.Port == 300 || uri.Port == 5173); // Validando IP e portas específicas
+                    return uri.Host.StartsWith("192.168.103.") && (uri.Port == 3000 || uri.Port == 5173); // Validando IP e portas específicas
                 })
                 .AllowAnyMethod()
                 .AllowAnyHeader()

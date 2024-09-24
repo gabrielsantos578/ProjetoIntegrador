@@ -9,7 +9,7 @@ export default defineConfig({
     port: 5173, // A porta em que o servidor estará escutando
     proxy: {
       '/api': {
-        target: 'https://192.168.0.106:5173', // Atualize com o IP e porta do seu backend
+        target: 'https://192.168.103.76:5173', // Atualize com o IP e porta do seu backend
         changeOrigin: true,
         secure: true,  // TRUE para HTTPS
         rewrite: (path) => path.replace(/^\/api/, '')
